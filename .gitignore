@@ -27,3 +27,7 @@ build/
 
 # Misc
 .DS_Store
+
+# Environment Variables
+*.env
+!default.env

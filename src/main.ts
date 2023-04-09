@@ -1,34 +1,28 @@
-/**
- * Some predefined delay values (in milliseconds).
- */
-export enum Delays {
-  Short = 500,
-  Medium = 2000,
-  Long = 5000,
+import * as dotenv from 'dotenv'
+import { pino } from "pino";
+import readline from 'readline'
+
+import { initialMenu } from "./flow/initialMenu.js";
+import { InquirerWrapper } from "./inquirerWrapper.js";
+import { createNewKafkaInstance } from './kafka/kafkaUtils.js';
+import type { MenuContext } from "./types.js";
+
+dotenv.config()
+
+export default async function main(): Promise<void> {
+  const logger = pino({ level: process.env.LOG_LEVEL || 'info' })
+
+  const context: MenuContext = {
+    inquirer: new InquirerWrapper(),
+    logger,
+    kafka: await createNewKafkaInstance(logger),
+    readline: readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    })
+  }
+
+  await initialMenu(context)
 }
 
-/**
- * Returns a Promise<string> that resolves after a given time.
- *
- * @param {string} name - A name.
- * @param {number=} [delay=Delays.Medium] - A number of milliseconds to delay resolution of the Promise.
- * @returns {Promise<string>}
- */
-function delayedHello(
-  name: string,
-  delay: number = Delays.Medium,
-): Promise<string> {
-  return new Promise((resolve: (value?: string) => void) =>
-    setTimeout(() => resolve(`Hello, ${name}`), delay),
-  );
-}
-
-// Please see the comment in the .eslintrc.json file about the suppressed rule!
-// Below is an example of how to use ESLint errors suppression. You can read more
-// at https://eslint.org/docs/latest/user-guide/configuring/rules#disabling-rules
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export async function greeter(name: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
-  // The name parameter should be of type string. Any is used only to trigger the rule.
-  return await delayedHello(name, Delays.Long);
-}
+main()
