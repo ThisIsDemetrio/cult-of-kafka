@@ -34,7 +34,7 @@
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "jest --watch"
   },
-  "author": "Jakub Synowiec <jsynowiec@users.noreply.github.com>",
+  "author": "Demetrio Marino <demetrio.marino1985@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
     "dotenv": "^16.0.3",

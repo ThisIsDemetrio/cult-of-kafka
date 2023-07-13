@@ -1,10 +1,10 @@
 import fs from 'fs'
 
-import { kafkaMenu } from "./kafkaMenu.js"
-import type { InquirerSelectChoices, MenuContext } from "../types.js"
-import { listTopics } from "../kafka/listTopics.js"
-import { sendKafkaMessages } from "../kafka/sendKafkaMessages.js"
-import { readTopic } from "../kafka/readTopic.js"
+import { kafkaMenu } from "./kafkaMenu"
+import type { InquirerSelectChoices, MenuContext } from "../types"
+import { listTopics } from "../kafka/listTopics"
+import { sendKafkaMessages } from "../kafka/sendKafkaMessages"
+import { readTopic } from "../kafka/readTopic"
 
 export async function initialMenu(context: MenuContext): Promise<void> {
     const { 
