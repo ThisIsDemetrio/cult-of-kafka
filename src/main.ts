@@ -4,7 +4,7 @@ import readline from 'readline'
 
 import { initialMenu } from "./flow/initialMenu.js";
 import { InquirerWrapper } from "./inquirerWrapper.js";
-import { createNewKafkaInstance } from './kafka/kafkaUtils.js';
+import { createNewKafkaInstance } from './kafka/createNewKafkaInstance.js';
 import type { MenuContext } from "./types.js";
 
 dotenv.config()

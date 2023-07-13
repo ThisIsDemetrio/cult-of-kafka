@@ -1,7 +1,9 @@
-import { createTopic } from "../kafka/createTopic.js"
-import { listTopics, printTopicList } from "../kafka/listTopics.js"
 import type { ITopicConfig } from "kafkajs"
+
+import { createTopic } from "../kafka/createTopic"
 import { deleteTopic } from "../kafka/deleteTopic.js"
+import { listTopics } from "../kafka/listTopics.js"
+import { printTopicList } from "../kafka/printTopicList.js"
 import type { InquirerSelectChoices, MenuContext } from "../types.js"
 
 export async function kafkaMenu(context: MenuContext): Promise<void> {

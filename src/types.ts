@@ -2,6 +2,8 @@ import type { Admin, Consumer, Producer } from "kafkajs";
 import pino from "pino"
 import readline from 'readline'
 
+//#region Inquirer types
+
 export type InquirerSelectChoices = {
     name: string;
     callback?: (...args: unknown[]) => boolean | Promise<boolean>
@@ -15,15 +17,21 @@ export interface InquirerWrapperInterface {
     select: (message: string, choicesData: InquirerSelectChoices[]) => Promise<void>;
 }
 
-export type KafkaInstance = {
-    admin: Admin,
-    consumer: Consumer,
-    producer: Producer
-}
-
 export type MenuContext = {
     inquirer: InquirerWrapperInterface,
     kafka: KafkaInstance,
     logger: pino.Logger,
     readline: readline.Interface
 }
+
+//#endregion
+
+//#region Kafka types
+
+export type KafkaInstance = {
+    admin: Admin,
+    consumer: Consumer,
+    producer: Producer
+}
+
+//#endregion

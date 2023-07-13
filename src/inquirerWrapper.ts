@@ -14,7 +14,7 @@ export class InquirerWrapper implements InquirerWrapperInterface {
     }
 
     async autocomplete(message: string, choices: string[] = []): Promise<string> {
-        // NOTE: Add any to avoid intellisense error
+        // TODO: Extend typings to avoid the any
         const {answer} = await inquirer.prompt({
             type: 'autocomplete',
             name: 'answer',
@@ -26,6 +26,7 @@ export class InquirerWrapper implements InquirerWrapperInterface {
                 return await fuzzy.filter(input, choices)
                     .map(token => token.string)
             } 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any)
     
         return answer
@@ -57,12 +58,14 @@ export class InquirerWrapper implements InquirerWrapperInterface {
     }
 
     async path(message: string): Promise<string> {
+        // TODO: Extend typings to avoid the any
         const {answer} = await inquirer.prompt({
             type: 'fuzzypath',
             name: 'answer',
             message,
             excludePath: (nodePath: string) => nodePath.startsWith('node_modules'),
             rootPath: '.',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any)
 
         return answer

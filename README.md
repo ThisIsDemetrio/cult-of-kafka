@@ -1,3 +1,5 @@
+<!-- TODO: Add a proper README and some example on how to use the app -->
+
 # node-typescript-boilerplate
 
 [![Sponsor][sponsor-badge]][sponsor]
