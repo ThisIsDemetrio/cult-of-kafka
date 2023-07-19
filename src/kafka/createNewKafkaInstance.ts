@@ -1,8 +1,8 @@
-import { Kafka } from "kafkajs"
+import { Kafka, logLevel } from "kafkajs"
 import type { KafkaConfig, SASLMechanism, SASLOptions  } from 'kafkajs'
 import type { Logger } from "pino"
 import { readFileSync } from "fs"
-import type { KafkaInstance } from "../types"
+import type { KafkaInstance } from "../types.js"
 
 //#region internal functions
 
@@ -91,6 +91,8 @@ export async function createNewKafkaInstance(logger: Logger): Promise<KafkaInsta
   }
   
   config.sasl = getSASLOptions(logger)
+  // TODO: Convert to kafkaJs logLevel
+  config.logLevel = logLevel.NOTHING
 
   const kafka = new Kafka(config)
 

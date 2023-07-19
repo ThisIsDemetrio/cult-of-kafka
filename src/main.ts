@@ -2,10 +2,10 @@ import * as dotenv from 'dotenv'
 import { pino } from "pino";
 import readline from 'readline'
 
-import { initialMenu } from "./flow/initialMenu";
-import { InquirerWrapper } from "./inquirerWrapper";
+import { initialMenu } from "./flow/initialMenu.js";
+import { InquirerWrapper } from "./inquirerWrapper.js";
 import { createNewKafkaInstance } from './kafka/createNewKafkaInstance.js';
-import type { MenuContext } from "./types";
+import type { MenuContext } from "./types.js";
 
 dotenv.config()
 

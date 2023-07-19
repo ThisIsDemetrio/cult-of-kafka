@@ -2,7 +2,7 @@ import inquirer from "inquirer";
 import inquirerAutocomplete from "inquirer-autocomplete-prompt"
 import fuzzyPath from "inquirer-fuzzy-path"
 import fuzzy from 'fuzzy'
-import type { InquirerSelectChoices, InquirerWrapperInterface } from "./types";
+import type { InquirerSelectChoices, InquirerWrapperInterface } from "./types.js";
 
 export class InquirerWrapper implements InquirerWrapperInterface {
     constructor () {

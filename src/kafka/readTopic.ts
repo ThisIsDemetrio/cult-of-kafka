@@ -1,4 +1,4 @@
-import type { MenuContext } from "../types";
+import type { MenuContext } from "../types.js";
 
 export async function readTopic(context: MenuContext, topic: string, fromBeginning: boolean): Promise<boolean> {
     const { kafka: { consumer }, logger, readline } = context
