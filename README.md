@@ -13,7 +13,7 @@ This application is at an early stage: there are no releases planned and develop
 
 In this README file, it is included a guide that explains how to run the application in development mode. It will allow running the application at the state included in the _main_ branch of this repository.
 
-**NOTE**: I can't stress enough that this application is at an early stage and might not work as expected. Please _use it only for personal projects_. I am not responsible for any loss of data, or disservice in configured and deployed Kafka instance. Whoever uses this application is responsible for his actions.
+**NOTE**: I can't stress enough that this application is at an early stage and might not work as expected. Please _use it only for personal projects_. I am not responsible for any loss of data, or disservice in configured and deployed Kafka instances. Whoever uses this application is responsible for his actions.
 
 ## Contributing
 
@@ -25,7 +25,7 @@ This can change at any time, and also you're free to hit me up for any informati
 
 I assume you have basic knowledge of [npm](https://www.npmjs.com/) and [Git](https://git-scm.com/).
 
-So, easily enough, you clone or fork the repository on your machine and access to the folder containing the code.
+So, easily enough, you clone or fork the repository on your machine and access the folder containing the code.
 From there, you have to install the needed dependencies inside the _node_modules_ folder:
 ```
 npm ci
@@ -44,7 +44,7 @@ KAFKA_BROKERS_LIST   | list of IPs that includes all the replicas of the Kafka i
 KAFKA_SASL_MECHANISM | authentication mechanism of Kafka. The only supported ones are _plain_, _scram-sha-256_ and _scram-sha-512_. Authentication is delegated to KafkaJS |
 KAFKA_SASL_USERNAME  | username to authenticate (if necessary) |
 KAFKA_SASL_PASSWORD  | the password of the user to authenticate (if necessary) |
-KAFKA_SSL_ENABLED    | `true` in case a SSL connection is needed to authenticate (if necessary) |
+KAFKA_SSL_ENABLED    | `true` in case an SSL connection is needed to authenticate (if necessary) |
 KAFKA_CA_CERT_PATH   | path of the certificate file needed to authenticate (if necessary) |
 
 Once you have updated all of this, you're ready to start. You can launch the application with the following command:
@@ -54,4 +54,4 @@ npm run start
 
 After the application build, the prompt will start and will allow you to execute operations with Kafka.
 
-Also consider that you can quit the application at any time by pressing `CTRL + C`.
+Also, consider that you can quit the application at any time by pressing `CTRL + C`.
