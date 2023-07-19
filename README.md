@@ -1,4 +1,4 @@
-<!-- TODO: Add a proper README and some example on how to use the app -->
+<!-- TODO: Add a proper README and some examples on how to use the app -->
 
 # node-typescript-boilerplate
 
