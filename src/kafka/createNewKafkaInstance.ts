@@ -1,16 +1,25 @@
 import { Kafka, logLevel } from "kafkajs"
 import type { KafkaConfig, SASLMechanism, SASLOptions  } from 'kafkajs'
-import type { Logger } from "pino"
+import type { Logger, pino } from "pino"
 import { readFileSync } from "fs"
 import type { KafkaInstance } from "../types.js"
 
-//#region internal functions
+//#region internal logic
 
+const logLevelMapping: Record<pino.LevelWithSilent, logLevel> = {
+  silent: logLevel.NOTHING,
+  fatal: logLevel.ERROR,
+  error: logLevel.ERROR,
+  warn: logLevel.WARN,
+  info: logLevel.INFO,
+  debug: logLevel.DEBUG,
+  trace: logLevel.DEBUG
+}
 
 const isValidSaslMechanism = (value: string): value is SASLMechanism => 
 ["plain", "scram-sha-256", "scram-sha-512", "aws", "oauthbearer"].includes(value)
 
-function getSASLOptions (logger: Logger): SASLOptions {
+function getSASLOptions (logger: Logger): SASLOptions | undefined {
     const {
         KAFKA_SASL_MECHANISM: mechanism = 'plain',
         // required options for user/pass authentication
@@ -36,6 +45,8 @@ function getSASLOptions (logger: Logger): SASLOptions {
 
     switch (mechanism) {
         case 'plain':
+          // No need of options in case of a plain auth
+          return
         case 'scram-sha-256':
         case 'scram-sha-512': {
             logger.debug(
@@ -91,8 +102,7 @@ export async function createNewKafkaInstance(logger: Logger): Promise<KafkaInsta
   }
   
   config.sasl = getSASLOptions(logger)
-  // TODO: Convert to kafkaJs logLevel
-  config.logLevel = logLevel.NOTHING
+  config.logLevel = logLevelMapping[logger.level]
 
   const kafka = new Kafka(config)
 
