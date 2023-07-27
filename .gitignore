@@ -31,3 +31,6 @@ dist/
 # Environment Variables (all but default.env)
 *.env
 !default.env
+
+# Personal configurations
+conf
