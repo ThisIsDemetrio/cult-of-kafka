@@ -38,9 +38,9 @@
   "author": "Demetrio Marino <demetrio.marino1985@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "@inquirer/prompts": "^3.0.0",
     "dotenv": "^16.0.3",
     "fuzzy": "^0.1.3",
-    "inquirer": "^9.1.4",
     "inquirer-autocomplete-prompt": "^3.0.0",
     "inquirer-fuzzy-path": "^2.3.0",
     "kafkajs": "^2.2.3",
