@@ -38,20 +38,22 @@ export async function initialMenu(context: MenuContext): Promise<void> {
                 let messages = []
                 try {
                     const content = fs.readFileSync(path, 'utf-8')
-                    console.log({ content })
+                    // TODO: Include here more information regarding the messages to be sent
                     messages = JSON.parse(content)
                 } catch (error) {
                     logger.debug({ description: 'error occurred during file loading', error})
                     console.log('Looks like the file you selected is invalid. Maybe you want to try it again?')
+                    return true
                 }
 
+                // TODO: Include a message to explain there are no messages and go back
                 if (messages.length === 0) return true
 
                 const topicList = await listTopics(logger, kafkaAdmin)
                 const topic = await inquirer.autocomplete('To which topic you want to send these messages?', topicList)
 
                 await sendKafkaMessages(logger, kafkaProducer, topic, messages)
-                return false
+                return true
             }
         },
         {
