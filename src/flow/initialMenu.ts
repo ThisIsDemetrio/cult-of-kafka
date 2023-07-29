@@ -3,15 +3,14 @@ import fs from 'fs'
 import { kafkaMenu } from "./kafkaMenu.js"
 import type { InquirerSelectChoices, MenuContext } from "../types.js"
 import { listTopics } from "../kafka/listTopics.js"
-import { sendKafkaMessages } from "../kafka/sendKafkaMessages.js"
 import { readTopic } from "../kafka/readTopic.js"
+import { sendMessagesMenu } from './sendMessagesMenu.js'
 
 export async function initialMenu(context: MenuContext): Promise<void> {
     const { 
         inquirer, 
         kafka: { 
-            admin: kafkaAdmin,
-            producer: kafkaProducer 
+            admin: kafkaAdmin
         }, 
         logger
     } = context
@@ -24,36 +23,28 @@ export async function initialMenu(context: MenuContext): Promise<void> {
                 return true
             }
         },
+        // TODO: Add menu voice: create message
         {
             name: 'Send message(s) from JSON file',
             callback: async (): Promise<boolean> => {
-                // TODO: This should have its own menu and choices to:
-                //       - prompt if send them all together
-                //       - prompt if send them one by one
-                //       - edit file
-                console.log("Ok, feed me a file.")
+                console.log("")
                 const path = await inquirer.path('What file includes the messages you want to send?')
                 logger.debug({ description: 'path selected', path })
 
-                let messages = []
+                let jsonContent: unknown
                 try {
                     const content = fs.readFileSync(path, 'utf-8')
-                    // TODO: Include here more information regarding the messages to be sent
-                    messages = JSON.parse(content)
+                    jsonContent = JSON.parse(content)
                 } catch (error) {
                     logger.debug({ description: 'error occurred during file loading', error})
-                    console.log('Looks like the file you selected is invalid. Maybe you want to try it again?')
+                    console.log('Looks like the file you selected is invalid. Please modify or select another file')
+                    console.log("--------")
                     return true
                 }
 
-                // TODO: Include a message to explain there are no messages and go back
-                if (messages.length === 0) return true
-
-                const topicList = await listTopics(logger, kafkaAdmin)
-                const topic = await inquirer.autocomplete('To which topic you want to send these messages?', topicList)
-
-                await sendKafkaMessages(logger, kafkaProducer, topic, messages)
-                return true
+                // TODO: From here we move to the sendMessagesMenu
+               await sendMessagesMenu(context, jsonContent)
+               return true
             }
         },
         {
@@ -61,11 +52,14 @@ export async function initialMenu(context: MenuContext): Promise<void> {
             callback: async (): Promise<boolean> => {
                 const topicList = await listTopics(logger, kafkaAdmin)
                 const topic = await inquirer.autocomplete('Which topic you want to listen?', topicList)
-
+                
                 const fromBeginning = await inquirer.confirm('You want to listen from the beginning of the topic?')
-
+                
+                // TODO: Add a stop by keydown
+                // TODO: Add the possibility to save the messages received in a JSON file
+                // TODO: Add readable timestamp to each message
                 await readTopic(context, topic, fromBeginning)
-                return false
+                return true
             }
         },
         {
