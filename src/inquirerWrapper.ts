@@ -13,11 +13,12 @@ export class InquirerWrapper implements InquirerWrapperInterface {
         inquirer.registerPrompt('fuzzypath', fuzzyPath)
     }
 
-    async autocomplete(message: string, choices: string[] = []): Promise<string> {
+    async autocomplete(message: string, choices: string[] = [], defaultValue?: string): Promise<string> {
         // TODO: Extend typings to avoid the any
         const {answer} = await inquirer.prompt({
             type: 'autocomplete',
             name: 'answer',
+            default: String(defaultValue ?? ''),
             choices,
             message,
             source: async (_answersSoFar: unknown, input?: string) => {
@@ -40,6 +41,17 @@ export class InquirerWrapper implements InquirerWrapperInterface {
         })
     
         return !!answer
+    }
+
+    async editor(message: string, defaultValue: string): Promise<string> {
+        const { result } = await inquirer.prompt({
+            type: 'editor',
+            message,
+            default: String(defaultValue ?? ''),
+            name: 'result'
+        })
+
+        return result
     }
 
     async input(message: string, defaultValue?: unknown): Promise<string> {
