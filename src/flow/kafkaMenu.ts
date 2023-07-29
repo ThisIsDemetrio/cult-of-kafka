@@ -40,9 +40,12 @@ export async function kafkaMenu(context: MenuContext): Promise<void> {
                     topicConfig.configEntries = [{ name: 'retention.ms', value: '360000' }]
                 }
 
-
                 await createTopic(logger, kafkaAdmin, topicConfig)
+
+                console.clear()
+                console.log('--------')
                 console.log(`Topic ${topicConfig.topic} successfully created`)
+                console.log('--------')
                 return true
             }
         },
@@ -53,7 +56,13 @@ export async function kafkaMenu(context: MenuContext): Promise<void> {
                 const topicToDelete = await inquirer.autocomplete('Which topic do you want to delete?', topicList)
                 if (await inquirer.confirm(`Are you sure to delete ${topicToDelete}?`)) {
                     await deleteTopic(logger, kafkaAdmin, topicToDelete)
+                    
+                    console.clear()
+                    console.log('--------')
+                    console.log(`Topic ${topicToDelete} deleted`)
+                    console.log('--------')
                 }
+
                 return true
             }
         },
@@ -62,5 +71,6 @@ export async function kafkaMenu(context: MenuContext): Promise<void> {
         }
     ]
 
+    console.clear()
     await inquirer.select('Ok, let\'s manage your Kafka instance. What would you like to do?', choicesData)
 }

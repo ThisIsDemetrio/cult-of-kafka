@@ -21,7 +21,8 @@ export default async function main(): Promise<void> {
       output: process.stdout
     })
   }
-
+  
+  console.clear()
   await initialMenu(context)
 }
 
