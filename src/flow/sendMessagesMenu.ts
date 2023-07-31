@@ -1,7 +1,7 @@
 import type { InquirerSelectChoices, MenuContext } from "../types.js"
 import { listTopics } from "../kafka/listTopics.js"
 import { sendKafkaMessages } from "../kafka/sendKafkaMessages.js"
-import { formatAndValidateMessages, formatMessages, isValidMessageContent } from "../utils/formatKafkaMessages.js"
+import { formatAndValidateMessages, formatMessage, isValidMessageContent } from "../utils/formatKafkaMessages.js"
 
 export async function sendMessagesMenu(context: MenuContext, jsonContent: unknown): Promise<void> {
     const { 
@@ -18,7 +18,8 @@ export async function sendMessagesMenu(context: MenuContext, jsonContent: unknow
     const choices: InquirerSelectChoices[] = [
         {
             name: 'Send all the messages at the same time',
-            callback: async (): Promise<boolean> => {    
+            callback: async (): Promise<boolean> => {
+                // Check for valid and invalid messages: valid to be sent, invalid to be discared (process will be notified to the user)
                 const {messages, invalidMessages} = formatAndValidateMessages(jsonContent)
                 if (invalidMessages.length > 0) {
                     logger.debug({ description: "Invalid messages", invalidMessages })
@@ -43,48 +44,55 @@ export async function sendMessagesMenu(context: MenuContext, jsonContent: unknow
         {
             name: 'Send the messages one by one',
             callback: async (): Promise<boolean> => {
-                const messages = formatMessages(jsonContent)
+                const rawMessages = Array.isArray(jsonContent) ? jsonContent : [jsonContent]
                 let selectedTopic: string | undefined = undefined
                 
                 let messageSentCounter = 0
                 let skippedMessagesCounter = 0
 
-                for (let index = 0; index < messages.length; index++) {
-                    let message = messages[index]
+                console.clear()
 
-                    console.clear()
+                for (let index = 0; index < rawMessages.length; index++) {
+                    let message = rawMessages[index]
+
                     console.log('--------')
-                    console.log('Message to be sent')
+                    console.log(`Message #${index + 1} of ${rawMessages.length} to be sent`)
                     console.log('--------')
-                    console.log(JSON.stringify(message, null,2 ))
+                    console.dir(message, { depth: null })
                     console.log('--------')
                     
                     // TODO: Probably a simple select with send/edit/skip would be great here
                     const editMessage = await inquirer.confirm("Do you want to edit first?")
-                    
-                    if (editMessage) {
-                        const editedMessage = await inquirer.editor("Edit the message", JSON.stringify(message, null, 2))
-                        try {
-                            message = JSON.parse(editedMessage)
-                        } catch (error){
-                            logger.debug("Error in edited message", error)
-                            // TODO: We keep the previous one here, but I want to be able to change it again
-                            console.log("The message received is invalid. We will keep the previous one then.")
-                        }
-                    }
+                    if (!editMessage) {
+                        message = formatMessage(message)
 
-                    while (!isValidMessageContent(message.value)) {
-                        const editMessage = await inquirer.confirm("Message looks invalid: do you want to edit it? (or we skip it?)")
-                        if (!editMessage) {
-                            skippedMessagesCounter += 1
-                            continue
-                        }
+                        while (!isValidMessageContent(message.value)) {
+                            const editMessage = await inquirer.confirm("Message looks invalid: do you want to edit it? (or we skip it?)")
+                            if (!editMessage) {
+                                skippedMessagesCounter += 1
+                                continue
+                            }
 
-                        const editedMessage = await inquirer.editor("Edit the message", JSON.stringify(message, null, 2))
-                        try {
-                            message = JSON.parse(editedMessage)
-                        } catch (error){
-                            logger.debug("Error in edited message", error)
+                            const editedMessage = await inquirer.editor("Edit the message", JSON.stringify(message, null, 2))
+                            try {
+                                const rawMessage = JSON.parse(editedMessage)
+                                message = formatMessage(rawMessage)
+                            } catch (error){
+                                logger.debug("Error in edited message", error)
+                            }
+                        }
+                    } else {
+                        while (editMessage) {
+                            const editedMessage = await inquirer.editor("Edit the message", JSON.stringify(message, null, 2))
+                            try {
+                                const rawMessage = JSON.parse(editedMessage)
+                                message = formatMessage(rawMessage)
+                                break
+                            } catch (error){
+                                logger.debug(`Error in edited message: ${error}`)
+                                logger.debug(error)
+                                console.log("The message received is invalid. I'm going to ask you to modify it again.")
+                            }
                         }
                     }
 
@@ -96,11 +104,10 @@ export async function sendMessagesMenu(context: MenuContext, jsonContent: unknow
 
                     await sendKafkaMessages(logger, kafkaProducer, selectedTopic, [message])
                     messageSentCounter += 1
+                    console.clear()
                     console.log('--------')
                     console.log(`Message successfully sent to topic!`)
                     console.log('--------')
-
-
                 }
             
                 console.log()

@@ -1,31 +1,28 @@
 import type { Message } from "kafkajs";
 
 
-const safeParseToString = (value: string | object): string => typeof value === 'string' ? value : JSON.stringify(value)
+const safeParseToString = (value: unknown): string => typeof value === 'string' ? value : JSON.stringify(value)
 
 export const isValidMessageContent = (value: unknown): value is string | object => {
     return ['string', 'object'].includes(typeof value) && !Array.isArray(value) 
 }
 
-export function formatMessages(rawMessages: unknown): Message[] {
-    const result: Message[] = []
+export function formatMessage(rawMessage: Record<string, unknown>): Message {
+    const { key, value, timestamp, partition, headers } = rawMessage
 
-    for (const rawMessage of Array.isArray(rawMessages) ? rawMessages : [rawMessages]) {
-        const { key, value, timestamp, partition, headers } = rawMessage
+    const parsedKey = key ? safeParseToString(key) : undefined
+    const parsedValue = value ? safeParseToString(value) : null
 
-        const parsedKey = key ? safeParseToString(key) : undefined
-        const parsedValue = value ? safeParseToString(value) : null
+    const parsedHeaders = Object.keys(headers as never || {}).length > 0 ? headers as Record<string, never> : undefined
+    const parsedPartition = isNaN(+(partition as never)) ? undefined : parseInt(partition as never)
 
-        result.push({
-            key: parsedKey,
-            value: parsedValue,
-            headers,
-            partition,
-            timestamp
-        })    
+    return {
+        key: parsedKey,
+        value: parsedValue,
+        headers: parsedHeaders,
+        partition: parsedPartition,
+        timestamp: timestamp?.toString() || undefined
     }
-
-    return result
 }
 
 export function formatAndValidateMessages(rawMessages: unknown): { messages: Message[], invalidMessages: unknown[] } {
